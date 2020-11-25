@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Demo Banking App - CSRF Study Demo</title>
+		<style>
+			table, th, td {
+				border: 1px solid black;
+				border-collapse: collapse;
+			}
+			th, td {
+				padding: 0.666rem;
+				text-align: center;
+			}
+		</style>
+	</head>
+	<body style="background-color: cyan;">
+		<div style="margin-left: auto; margin-right: auto; margin-top: 2rem; max-width: 56rem;">
+			<h1>Welcome to our online banking app! Secure since 2021?</h1>
+			<br/>
+			<hr/>
+			<table style="width: 100%;">
+				<thead>
+					<tr>
+						<th>Page</th>
+						<th>Description</th>
+						<th>Action</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>Login</td>
+						<td>Allows you to enter a username and password so future account-related requests process.</td>
+						<td><a href="login.html">Login</a></td>
+					</tr>
+					<tr>
+						<td>View Balance</td>
+						<td>Once logged in, you can access this page to view your current account balance.</td>
+						<td><a href="balance.html">Balance</a></td>
+					</tr>
+					<tr>
+						<td>Send Money Transfer</td>
+						<td>Use this page to quickly setup and then send a money transfer.</td>
+						<td><a href="setup_transfer.html">Transfer</a></td>
+					</tr>
+					<tr>
+						<td>Logout</td>
+						<td>Use this page to log out of the currently signed in bank account. You will need to log in again.</td>
+						<td><a href="logout.html">Logout</a></td>
+					</tr>
+				</tbody>
+			</table>
+			<hr/>
+			<br/>
+			<p style="font-size: 75%;">If you are not signed in, you will not be able to view any account options.</p>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Demo Banking App - CSRF Study Demo</title>
+	</head>
+	<body style="background-color: cyan;">
+		<div style="margin-left: auto; margin-right: auto; margin-top: 2rem; max-width: 56rem;">
+			<h1>Welcome to our online banking app! Secure since 2021?</h1>
+			<br/>
+			<hr/>
+			<form method="post" action="/do_login.html">
+				<label for="username">Username:&nbsp;</label>
+				<input type="text" id="username" name="username"/>
+				<br/><br/>
+				<label for="password">Password:&nbsp;&nbsp;</label>
+				<input type="password" id="password" name="password"/>
+				<br/><br/>
+
+				<input type="submit" value="Submit">
+			</form>
+
+			<br/><br/>
+			<a href="/">Go home</a>
+		</div>
+	</body>
+</html>
