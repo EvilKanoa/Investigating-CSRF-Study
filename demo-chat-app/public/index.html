@@ -3,8 +3,217 @@
 	<head>
 		<meta charset="utf-8">
 		<title>Demo Chat App - CSRF Study Demo</title>
+		<script src="/socket.io/socket.io.js"></script>
+		<style>
+			button {
+				font-size: 125%;
+				width: 100%;
+			}
+			.send-box {
+				width: 100%;
+				height: 20%;
+				background-color: cadetblue;
+				padding: 1rem;
+				overflow: scroll;
+				box-sizing: border-box;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+			}
+			.hide { display: none; }
+			.user-box {
+				position: absolute;
+				right: 1rem;
+				top: 1rem;
+				width: 13rem;
+				height: 24rem;
+				overflow: scroll;
+				background-color: goldenrod;
+			}
+			.user-box > p {
+				margin: 0.5rem;
+				padding: 0 .5rem;
+				font-size: 115%;
+				font-weight: bold;
+			}
+			.message {
+				background-color: darksalmon;
+				padding: 1rem;
+				border-radius: 1rem;
+				margin-bottom: 1rem;
+				font-size: 115%;
+			}
+			.message > img {
+				max-width: 100%;
+				max-height: 100%;
+			}
+		</style>
+		<script>
+			document.addEventListener('DOMContentLoaded', () => {
+				const socket = document.mySocket = io();
+				const userBox = document.querySelector('.user-box');
+				const msgBox = document.querySelector('.message-box');
+				const textModeBtn = document.querySelector('#text-mode-button');
+				const imageModeBtn = document.querySelector('#image-mode-button');
+				const sendBtn = document.querySelector('#send-button');
+				const textInput = document.querySelector('#text-input');
+				const imageInput = document.querySelector('#image-input');
+				const urlInput = document.querySelector('#url-input');
+				let type = 'text';
+				let username = 'Anonymous';
+
+				const setType = (isTextType = true) => {
+					textModeBtn.disabled = isTextType;
+					imageModeBtn.disabled = !isTextType;
+					textInput.style.display = isTextType ? 'initial' : 'none';
+					imageInput.style.display = isTextType ? 'none' : 'initial';
+					type = isTextType ? 'text' : 'image';
+				};
+				textModeBtn.addEventListener('click', () => setType(true));
+				imageModeBtn.addEventListener('click', () => setType(false));
+
+				setType(); // reset to text type on load
+
+				const handleSend = () => {
+					const message = { username, type };
+					switch (type) {
+						case 'text':
+							message.text = textInput.value;
+							textInput.value = '';
+							break;
+						case 'image':
+							message.url = urlInput.value;
+							urlInput.value = '';
+							break;
+						default:
+							return;
+					}
+					socket.emit('message', JSON.stringify(message));
+				};
+				sendBtn.addEventListener('click', handleSend);
+				textInput.addEventListener('keypress', (event) => {
+					// check if enter was pressed
+					if (event.keyCode == 13) {
+						event.preventDefault();
+						handleSend();
+					}
+				});
+
+				socket.on('connect', () => {
+					username = prompt('Please enter a username:') || username;
+					socket.emit('id', username);
+					socket.emit('request-messages');
+				});
+
+				socket.on('users', rawData => {
+					const users = JSON.parse(rawData) || [];
+					
+					// remove any old users
+					for (let i = userBox.children.length - 1; i >= 0; --i) {
+						if (userBox.children[i].tagName === 'P') {
+							userBox.children[i].remove();
+						}
+					}
+
+					users.forEach(username => {
+						const p = document.createElement('p');
+						p.appendChild(document.createTextNode(username));
+						userBox.appendChild(p);
+					});
+				});
+
+				socket.on('message', rawData => {
+					const message = JSON.parse(rawData);
+					if (!message || !message.type) {
+						return;
+					}
+
+					const div = document.createElement('div');
+					div.className = 'message';
+					switch (message.type) {
+						case 'text':
+							div.appendChild(document.createTextNode(
+								`${message.username}: "${message.text}"`
+							));
+							break;
+						case 'image':
+							div.appendChild(document.createTextNode(`${message.username}:`));
+
+							const img = document.createElement('img');
+							img.src = message.url;
+							div.appendChild(img);
+							break;
+						default:
+							return;
+					}
+					msgBox.appendChild(div);
+				});
+			});
+		</script>
 	</head>
-	<body>
-		<p>Hello chatters!</p>
+	<body style="margin: 0; background-color: aquamarine;">
+		<div class="user-box">
+			<h3 style="margin: 0; padding-top: 0.66rem; text-align: center;">
+				Online Users
+			</h3>
+			<hr/>
+		</div>
+
+		<div style="
+			margin-left: auto;
+			margin-right: auto;
+			padding: 2rem;
+			max-width: 42rem;
+			height: 100vh;
+			box-sizing: border-box;
+		">
+			<div class="message-box" style="
+				width: 100%;
+				height: 80%;
+				background-color: blanchedalmond;
+				padding: 2rem;
+				overflow: scroll;
+				box-sizing: border-box;
+			"></div>
+
+			<div class="send-box">
+				<div style="
+					width: 13%;
+					height: 100%;
+					display: flex;
+					flex-flow: column;
+					justify-content: space-evenly;
+				">
+					<button disabled id="text-mode-button">Text</button>
+					<button id="image-mode-button">Image</button>
+				</div>
+
+				<textarea
+					id="text-input"
+					placeholder="Enter message..."
+					style="width: 66%; height: 100%; font-size: 125%; resize: none;"
+				></textarea>
+
+				<div id="image-input" class="hide">
+					<label for="url">Enter Image URL:&nbsp;&nbsp;&nbsp;</label>
+					<input
+						id="url-input"
+						type="text"
+						name="url"
+						placeholder="Enter image URL..."
+					/>
+				</div>
+
+				<div style="
+					width: 13%;
+					height: 100%;
+					display: flex;
+					flex-flow: column;
+					justify-content: space-evenly;
+				">
+					<button id='send-button'>Send</button>
+				</div>
+			</div>
+		</div>
 	</body>
 </html>
