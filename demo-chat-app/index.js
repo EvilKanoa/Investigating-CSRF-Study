@@ -91,7 +91,7 @@ const messages = [
 	});
 
 	/* begin listening for incoming requests */
-	http.listen(8082, () => console.log('Server listening on port 8082!'));
+	http.listen(8081, () => console.log('Server listening on port 8082!'));
 })()
 	.then(() => console.log('Chat app server setup complete!'))
 	.catch(err => console.error('Encountered a fatal error during setup!\n', err));
